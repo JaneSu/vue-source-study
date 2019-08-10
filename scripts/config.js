@@ -9,18 +9,13 @@ const version = process.env.VERSION || require('../package.json').version
 const weexVersion = process.env.WEEX_VERSION || require('../packages/weex-vue-framework/package.json').version
 const featureFlags = require('./feature-flags')
 
-const banner =
-  '/*!\n' +
-  ` * Vue.js v${version}\n` +
-  ` * (c) 2014-${new Date().getFullYear()} Evan You\n` +
-  ' * Released under the MIT License.\n' +
-  ' */'
+const banner = '/*!\n' + ` * Vue.js v${version}\n` + ` * (c) 2014-${new Date().getFullYear()} Evan You\n` + ' * Released under the MIT License.\n' + ' */'
 
 const weexFactoryPlugin = {
-  intro () {
+  intro() {
     return 'module.exports = function weexFactory (exports, document) {'
   },
-  outro () {
+  outro() {
     return '}'
   }
 }
@@ -213,15 +208,13 @@ const builds = {
   }
 }
 
-function genConfig (name) {
+function genConfig(name) {
   const opts = builds[name]
   const config = {
     input: opts.entry,
     external: opts.external,
-    plugins: [
-      flow(),
-      alias(Object.assign({}, aliases, opts.alias))
-    ].concat(opts.plugins || []),
+    sourceMap: true,
+    plugins: [flow(), alias(Object.assign({}, aliases, opts.alias))].concat(opts.plugins || []),
     output: {
       file: opts.dest,
       format: opts.format,
