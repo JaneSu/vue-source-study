@@ -15,26 +15,26 @@
 
   // These helpers produce better VM code in JS engines due to their
   // explicitness and function inlining.
-  function isUndef (v) {
+  function isUndef(v) {
     return v === undefined || v === null
   }
 
-  function isDef (v) {
+  function isDef(v) {
     return v !== undefined && v !== null
   }
 
-  function isTrue (v) {
+  function isTrue(v) {
     return v === true
   }
 
-  function isFalse (v) {
+  function isFalse(v) {
     return v === false
   }
 
   /**
    * Check if value is primitive.
    */
-  function isPrimitive (value) {
+  function isPrimitive(value) {
     return (
       typeof value === 'string' ||
       typeof value === 'number' ||
@@ -49,7 +49,7 @@
    * Objects from primitive values when we know the value
    * is a JSON-compliant type.
    */
-  function isObject (obj) {
+  function isObject(obj) {
     return obj !== null && typeof obj === 'object'
   }
 
@@ -58,7 +58,7 @@
    */
   var _toString = Object.prototype.toString;
 
-  function toRawType (value) {
+  function toRawType(value) {
     return _toString.call(value).slice(8, -1)
   }
 
@@ -66,46 +66,40 @@
    * Strict object type check. Only returns true
    * for plain JavaScript objects.
    */
-  function isPlainObject (obj) {
+  // 判断传入的参数是否是对象
+  // 返回布尔值
+  function isPlainObject(obj) {
     return _toString.call(obj) === '[object Object]'
   }
 
-  function isRegExp (v) {
+  function isRegExp(v) {
     return _toString.call(v) === '[object RegExp]'
   }
 
   /**
    * Check if val is a valid array index.
    */
-  function isValidArrayIndex (val) {
+  function isValidArrayIndex(val) {
     var n = parseFloat(String(val));
     return n >= 0 && Math.floor(n) === n && isFinite(val)
   }
 
-  function isPromise (val) {
-    return (
-      isDef(val) &&
-      typeof val.then === 'function' &&
-      typeof val.catch === 'function'
-    )
+  function isPromise(val) {
+    return isDef(val) && typeof val.then === 'function' && typeof val.catch === 'function'
   }
 
   /**
    * Convert a value to a string that is actually rendered.
    */
-  function toString (val) {
-    return val == null
-      ? ''
-      : Array.isArray(val) || (isPlainObject(val) && val.toString === _toString)
-        ? JSON.stringify(val, null, 2)
-        : String(val)
+  function toString(val) {
+    return val == null ? '' : Array.isArray(val) || (isPlainObject(val) && val.toString === _toString) ? JSON.stringify(val, null, 2) : String(val)
   }
 
   /**
    * Convert an input value to a number for persistence.
    * If the conversion fails, return original string.
    */
-  function toNumber (val) {
+  function toNumber(val) {
     var n = parseFloat(val);
     return isNaN(n) ? val : n
   }
@@ -114,18 +108,13 @@
    * Make a map and return a function for checking if a key
    * is in that map.
    */
-  function makeMap (
-    str,
-    expectsLowerCase
-  ) {
+  function makeMap(str, expectsLowerCase) {
     var map = Object.create(null);
     var list = str.split(',');
     for (var i = 0; i < list.length; i++) {
       map[list[i]] = true;
     }
-    return expectsLowerCase
-      ? function (val) { return map[val.toLowerCase()]; }
-      : function (val) { return map[val]; }
+    return expectsLowerCase ? function (val) { return map[val.toLowerCase()]; } : function (val) { return map[val]; }
   }
 
   /**
@@ -141,7 +130,7 @@
   /**
    * Remove an item from an array.
    */
-  function remove (arr, item) {
+  function remove(arr, item) {
     if (arr.length) {
       var index = arr.indexOf(item);
       if (index > -1) {
@@ -154,16 +143,16 @@
    * Check whether an object has the property.
    */
   var hasOwnProperty = Object.prototype.hasOwnProperty;
-  function hasOwn (obj, key) {
+  function hasOwn(obj, key) {
     return hasOwnProperty.call(obj, key)
   }
 
   /**
    * Create a cached version of a pure function.
    */
-  function cached (fn) {
+  function cached(fn) {
     var cache = Object.create(null);
-    return (function cachedFn (str) {
+    return (function cachedFn(str) {
       var hit = cache[str];
       return hit || (cache[str] = fn(str))
     })
@@ -173,24 +162,30 @@
    * Camelize a hyphen-delimited string.
    */
   var camelizeRE = /-(\w)/g;
-  var camelize = cached(function (str) {
-    return str.replace(camelizeRE, function (_, c) { return c ? c.toUpperCase() : ''; })
-  });
+  var camelize = cached(
+    function (str) {
+      return str.replace(camelizeRE, function (_, c) { return (c ? c.toUpperCase() : ''); })
+    }
+  );
 
   /**
    * Capitalize a string.
    */
-  var capitalize = cached(function (str) {
-    return str.charAt(0).toUpperCase() + str.slice(1)
-  });
+  var capitalize = cached(
+    function (str) {
+      return str.charAt(0).toUpperCase() + str.slice(1)
+    }
+  );
 
   /**
    * Hyphenate a camelCase string.
    */
   var hyphenateRE = /\B([A-Z])/g;
-  var hyphenate = cached(function (str) {
-    return str.replace(hyphenateRE, '-$1').toLowerCase()
-  });
+  var hyphenate = cached(
+    function (str) {
+      return str.replace(hyphenateRE, '-$1').toLowerCase()
+    }
+  );
 
   /**
    * Simple bind polyfill for environments that do not support it,
@@ -201,32 +196,26 @@
    */
 
   /* istanbul ignore next */
-  function polyfillBind (fn, ctx) {
-    function boundFn (a) {
+  function polyfillBind(fn, ctx) {
+    function boundFn(a) {
       var l = arguments.length;
-      return l
-        ? l > 1
-          ? fn.apply(ctx, arguments)
-          : fn.call(ctx, a)
-        : fn.call(ctx)
+      return l ? (l > 1 ? fn.apply(ctx, arguments) : fn.call(ctx, a)) : fn.call(ctx)
     }
 
     boundFn._length = fn.length;
     return boundFn
   }
 
-  function nativeBind (fn, ctx) {
+  function nativeBind(fn, ctx) {
     return fn.bind(ctx)
   }
 
-  var bind = Function.prototype.bind
-    ? nativeBind
-    : polyfillBind;
+  var bind = Function.prototype.bind ? nativeBind : polyfillBind;
 
   /**
    * Convert an Array-like object to a real Array.
    */
-  function toArray (list, start) {
+  function toArray(list, start) {
     start = start || 0;
     var i = list.length - start;
     var ret = new Array(i);
@@ -239,7 +228,7 @@
   /**
    * Mix properties into target object.
    */
-  function extend (to, _from) {
+  function extend(to, _from) {
     for (var key in _from) {
       to[key] = _from[key];
     }
@@ -249,7 +238,7 @@
   /**
    * Merge an Array of Objects into a single Object.
    */
-  function toObject (arr) {
+  function toObject(arr) {
     var res = {};
     for (var i = 0; i < arr.length; i++) {
       if (arr[i]) {
@@ -266,7 +255,7 @@
    * Stubbing args to make Flow happy without leaving useless transpiled code
    * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/).
    */
-  function noop (a, b, c) {}
+  function noop(a, b, c) {}
 
   /**
    * Always return false.
@@ -283,17 +272,19 @@
   /**
    * Generate a string containing static keys from compiler modules.
    */
-  function genStaticKeys (modules) {
-    return modules.reduce(function (keys, m) {
-      return keys.concat(m.staticKeys || [])
-    }, []).join(',')
+  function genStaticKeys(modules) {
+    return modules
+      .reduce(function (keys, m) {
+        return keys.concat(m.staticKeys || [])
+      }, [])
+      .join(',')
   }
 
   /**
    * Check if two values are loosely equal - that is,
    * if they are plain objects, do they have the same shape?
    */
-  function looseEqual (a, b) {
+  function looseEqual(a, b) {
     if (a === b) { return true }
     var isObjectA = isObject(a);
     var isObjectB = isObject(b);
@@ -302,17 +293,23 @@
         var isArrayA = Array.isArray(a);
         var isArrayB = Array.isArray(b);
         if (isArrayA && isArrayB) {
-          return a.length === b.length && a.every(function (e, i) {
-            return looseEqual(e, b[i])
-          })
+          return (
+            a.length === b.length &&
+            a.every(function (e, i) {
+              return looseEqual(e, b[i])
+            })
+          )
         } else if (a instanceof Date && b instanceof Date) {
           return a.getTime() === b.getTime()
         } else if (!isArrayA && !isArrayB) {
           var keysA = Object.keys(a);
           var keysB = Object.keys(b);
-          return keysA.length === keysB.length && keysA.every(function (key) {
-            return looseEqual(a[key], b[key])
-          })
+          return (
+            keysA.length === keysB.length &&
+            keysA.every(function (key) {
+              return looseEqual(a[key], b[key])
+            })
+          )
         } else {
           /* istanbul ignore next */
           return false
@@ -333,7 +330,7 @@
    * found in the array (if value is a plain object, the array must
    * contain an object of the same shape), or -1 if it is not present.
    */
-  function looseIndexOf (arr, val) {
+  function looseIndexOf(arr, val) {
     for (var i = 0; i < arr.length; i++) {
       if (looseEqual(arr[i], val)) { return i }
     }
@@ -343,9 +340,9 @@
   /**
    * Ensure a function is called only once.
    */
-  function once (fn) {
+  function once(fn) {
     var called = false;
-    return function () {
+    return function() {
       if (!called) {
         called = true;
         fn.apply(this, arguments);
@@ -465,6 +462,9 @@
     /**
      * Perform updates asynchronously. Intended to be used by Vue Test Utils
      * This will significantly reduce performance if set to false.
+     *
+     * 异步更新数据，用于 Vue Test Utils
+     * 如果设置为false，会显著降低性能
      */
     async: true,
 
@@ -534,25 +534,29 @@
   var isIE = UA && /msie|trident/.test(UA);
   var isIE9 = UA && UA.indexOf('msie 9.0') > 0;
   var isEdge = UA && UA.indexOf('edge/') > 0;
-  var isAndroid = (UA && UA.indexOf('android') > 0) || (weexPlatform === 'android');
-  var isIOS = (UA && /iphone|ipad|ipod|ios/.test(UA)) || (weexPlatform === 'ios');
+  var isAndroid = (UA && UA.indexOf('android') > 0) || weexPlatform === 'android';
+  var isIOS = (UA && /iphone|ipad|ipod|ios/.test(UA)) || weexPlatform === 'ios';
   var isChrome = UA && /chrome\/\d+/.test(UA) && !isEdge;
   var isPhantomJS = UA && /phantomjs/.test(UA);
   var isFF = UA && UA.match(/firefox\/(\d+)/);
 
   // Firefox has a "watch" function on Object.prototype...
-  var nativeWatch = ({}).watch;
+  var nativeWatch = {}.watch;
 
   var supportsPassive = false;
   if (inBrowser) {
     try {
       var opts = {};
-      Object.defineProperty(opts, 'passive', ({
-        get: function get () {
-          /* istanbul ignore next */
-          supportsPassive = true;
-        }
-      })); // https://github.com/facebook/flow/issues/285
+      Object.defineProperty(
+        opts,
+        'passive',
+        ({
+          get: function get() {
+            /* istanbul ignore next */
+            supportsPassive = true;
+          }
+        })
+      ); // https://github.com/facebook/flow/issues/285
       window.addEventListener('test-passive', null, opts);
     } catch (e) {}
   }
@@ -560,6 +564,9 @@
   // this needs to be lazy-evaled because vue may be required before
   // vue-server-renderer can set VUE_ENV
   var _isServer;
+  // 判断是否是服务端渲染
+  // false 不是
+  // true 是
   var isServerRendering = function () {
     if (_isServer === undefined) {
       /* istanbul ignore if */
@@ -578,23 +585,23 @@
   var devtools = inBrowser && window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
 
   /* istanbul ignore next */
-  function isNative (Ctor) {
+  // 判断输入的参数
+  // 是否是函数，并且
+  // 是否是内置函数
+  function isNative(Ctor) {
     return typeof Ctor === 'function' && /native code/.test(Ctor.toString())
   }
 
-  var hasSymbol =
-    typeof Symbol !== 'undefined' && isNative(Symbol) &&
-    typeof Reflect !== 'undefined' && isNative(Reflect.ownKeys);
+  var hasSymbol = typeof Symbol !== 'undefined' && isNative(Symbol) && typeof Reflect !== 'undefined' && isNative(Reflect.ownKeys);
 
-  var _Set;
-  /* istanbul ignore if */ // $flow-disable-line
-  if (typeof Set !== 'undefined' && isNative(Set)) {
+  var _Set; // $flow-disable-line
+  /* istanbul ignore if */ if (typeof Set !== 'undefined' && isNative(Set)) {
     // use native Set when available.
     _Set = Set;
   } else {
     // a non-standard Set polyfill that only works with primitive keys.
     _Set = /*@__PURE__*/(function () {
-      function Set () {
+      function Set() {
         this.set = Object.create(null);
       }
       Set.prototype.has = function has (key) {
@@ -713,15 +720,16 @@
    * A dep is an observable that can have multiple
    * directives subscribing to it.
    */
-  var Dep = function Dep () {
+  var Dep = function Dep() {
     this.id = uid++;
     this.subs = [];
   };
-
+  //添加订阅
   Dep.prototype.addSub = function addSub (sub) {
     this.subs.push(sub);
   };
 
+  // 删除订阅
   Dep.prototype.removeSub = function removeSub (sub) {
     remove(this.subs, sub);
   };
@@ -732,13 +740,18 @@
     }
   };
 
+  // 通知
   Dep.prototype.notify = function notify () {
     // stabilize the subscriber list first
+    // 浅拷贝订阅列表
     var subs = this.subs.slice();
     if ( !config.async) {
       // subs aren't sorted in scheduler if not running async
       // we need to sort them now to make sure they fire in correct
       // order
+
+      // 关闭异步，则subs不在调度中排序
+      // 为了保证他们能正确的执行，现在就带他们进行排序
       subs.sort(function (a, b) { return a.id - b.id; });
     }
     for (var i = 0, l = subs.length; i < l; i++) {
@@ -749,15 +762,18 @@
   // The current target watcher being evaluated.
   // This is globally unique because only one watcher
   // can be evaluated at a time.
+
+  // 这个是全局独一无二的属性
+  // 以为同一时间只能运行一个
   Dep.target = null;
   var targetStack = [];
 
-  function pushTarget (target) {
+  function pushTarget(target) {
     targetStack.push(target);
     Dep.target = target;
   }
 
-  function popTarget () {
+  function popTarget() {
     targetStack.pop();
     Dep.target = targetStack[targetStack.length - 1];
   }
@@ -906,6 +922,8 @@
   /**
    * In some cases we may want to disable observation inside a component's
    * update computation.
+   *
+   * 在某些情况下，我们希望在组件内更新计算时禁用观察者
    */
   var shouldObserve = true;
 
@@ -920,10 +938,10 @@
    * collect dependencies and dispatch updates.
    */
   var Observer = function Observer(value) {
-    debugger
     this.value = value;
     this.dep = new Dep();
     this.vmCount = 0;
+    // 将 Observer 的实例绑定在 data 的__ob__中
     def(value, '__ob__', this);
     if (Array.isArray(value)) {
       if (hasProto) {
@@ -950,6 +968,7 @@
    * 只有在值的类型为对象时调用此方法
    */
   Observer.prototype.walk = function walk (obj) {
+    debugger
     var keys = Object.keys(obj);
     for (var i = 0; i < keys.length; i++) {
       defineReactive(obj, keys[i]);
@@ -1014,6 +1033,12 @@
       // 存在相应的观测
       ob = value.__ob__;
     } else if (shouldObserve && !isServerRendering() && (Array.isArray(value) || isPlainObject(value)) && Object.isExtensible(value) && !value._isVue) {
+      // 条件判断
+      // 可以建立观察 且
+      // 不是服务端渲染 且
+      // 是数组或者对象 且
+      // 对象是否可扩展（能否在这个对象上添加属性） 且
+      // 不是vue实例
       ob = new Observer(value);
     }
     if (asRootData && ob) {
@@ -1027,7 +1052,7 @@
    */
   function defineReactive(obj, key, val, customSetter, shallow) {
     var dep = new Dep();
-
+    // 则返回 不做操作
     var property = Object.getOwnPropertyDescriptor(obj, key);
     if (property && property.configurable === false) {
       return
@@ -1036,6 +1061,10 @@
     // cater for pre-defined getter/setters
     var getter = property && property.get;
     var setter = property && property.set;
+
+    // 如果没有设置过getter或者存在setter 且
+    // 只传入了两个参数，则将
+    // 旧对象上属性的值赋值给一个变量
     if ((!getter || setter) && arguments.length === 2) {
       val = obj[key];
     }
@@ -1058,6 +1087,7 @@
         return value
       },
       set: function reactiveSetter(newVal) {
+        // 获取旧属性值
         var value = getter ? getter.call(obj) : val;
         /* eslint-disable no-self-compare */
         if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -1068,6 +1098,7 @@
           customSetter();
         }
         // #7981: for accessor properties without setter
+        // 用于没有setter的访问器属性
         if (getter && !setter) { return }
         if (setter) {
           setter.call(obj, newVal);
@@ -1907,7 +1938,7 @@
   var callbacks = [];
   var pending = false;
 
-  function flushCallbacks () {
+  function flushCallbacks() {
     pending = false;
     var copies = callbacks.slice(0);
     callbacks.length = 0;
@@ -1937,6 +1968,8 @@
   // Promise is available, we will use it:
   /* istanbul ignore next, $flow-disable-line */
   if (typeof Promise !== 'undefined' && isNative(Promise)) {
+    // 构造函数 Promise 不是 undefined，并且
+    // Promise 属于原生方法
     var p = Promise.resolve();
     timerFunc = function () {
       p.then(flushCallbacks);
@@ -1947,12 +1980,16 @@
       // "force" the microtask queue to be flushed by adding an empty timer.
       if (isIOS) { setTimeout(noop); }
     };
+
+    // 当前环境支持微任务
     isUsingMicroTask = true;
-  } else if (!isIE && typeof MutationObserver !== 'undefined' && (
-    isNative(MutationObserver) ||
-    // PhantomJS and iOS 7.x
-    MutationObserver.toString() === '[object MutationObserverConstructor]'
-  )) {
+  } else if (
+    !isIE &&
+    typeof MutationObserver !== 'undefined' &&
+    (isNative(MutationObserver) ||
+      // PhantomJS and iOS 7.x
+      MutationObserver.toString() === '[object MutationObserverConstructor]')
+  ) {
     // Use MutationObserver where native Promise is not available,
     // e.g. PhantomJS, iOS7, Android 4.4
     // (#6466 MutationObserver is unreliable in IE11)
@@ -1981,7 +2018,7 @@
     };
   }
 
-  function nextTick (cb, ctx) {
+  function nextTick(cb, ctx) {
     var _resolve;
     callbacks.push(function () {
       if (cb) {
@@ -4606,12 +4643,18 @@
   };
 
   function proxy(target, sourceKey, key) {
+    // 根据 initData 函数中的循环设置data里没想的 defineProperty
     sharedPropertyDefinition.get = function proxyGetter() {
       return this[sourceKey][key]
     };
     sharedPropertyDefinition.set = function proxySetter(val) {
       this[sourceKey][key] = val;
     };
+    // target 中的子元素不具备 key 这个属性
+    // 而是在 $data 或者 _data 中才有
+    // 这里用 defineProperty 设置对象上不存在的属性是可以做一层转发
+    // eg: this.name = 'Jane'
+    // 实际改变的是 this._data.name = 'Jane'
     Object.defineProperty(target, key, sharedPropertyDefinition);
   }
 
@@ -4673,11 +4716,20 @@
     toggleObserving(true);
   }
 
+  /**
+   * @description 初始化 data 里的数据
+   * @param {Component} vm 当前页面的实例
+   */
   function initData(vm) {
     var data = vm.$options.data;
     // 检查返回的data对象是函数还是对象
+    // 这里 data 引用拷贝了 vm._data ,因此
+    // 后续对 data 的修改都会反映到 vm._data 上
+    // 这里分了两步， proxy 将 vm.[key] 代理到 vm._data.[key] 上
+    // 再在 vm._data.[keu] 用 definePropperty 设置值
     data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {};
     if (!isPlainObject(data)) {
+      // 处理data不为对象的错误情况
       data = {};
        warn('data functions should return an object:\n' + 'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function', vm);
     }
@@ -4690,7 +4742,7 @@
       var key = keys[i];
       {
         if (methods && hasOwn(methods, key)) {
-          // method 和 data中
+          // method 和 data 中
           // 如果有相同的key
           // 报错
           warn(("Method \"" + key + "\" has already been defined as a data property."), vm);
@@ -4710,8 +4762,11 @@
 
   function getData(data, vm) {
     // #7573 disable dep collection when invoking data getters
+    // 数据调用getter时，禁止依赖收集
     pushTarget();
     try {
+      // 将data中的this绑定到实例上
+
       return data.call(vm, vm)
     } catch (e) {
       handleError(e, vm, "data()");
@@ -7347,7 +7402,7 @@
   // it's important to place the event as the first in the array because
   // the whole point is ensuring the v-model callback gets called before
   // user-attached handlers.
-  function normalizeEvents (on) {
+  function normalizeEvents(on) {
     /* istanbul ignore if */
     if (isDef(on[RANGE_TOKEN])) {
       // IE input[type=range] only supports `change` event
@@ -7366,9 +7421,9 @@
 
   var target$1;
 
-  function createOnceHandler$1 (event, handler, capture) {
+  function createOnceHandler$1(event, handler, capture) {
     var _target = target$1; // save current target element in closure
-    return function onceHandler () {
+    return function onceHandler() {
       var res = handler.apply(null, arguments);
       if (res !== null) {
         remove$2(event, onceHandler, capture, _target);
@@ -7379,67 +7434,70 @@
   // #9446: Firefox <= 53 (in particular, ESR 52) has incorrect Event.timeStamp
   // implementation and does not fire microtasks in between event propagation, so
   // safe to exclude.
+
+  // 火狐在53版本下，事件触发的时间戳记录不正确
+  // 并且在事件传播的过程中也不触发微任务
+  // 因此可以安全的排除
   var useMicrotaskFix = isUsingMicroTask && !(isFF && Number(isFF[1]) <= 53);
 
-  function add$1 (
-    name,
-    handler,
-    capture,
-    passive
-  ) {
+  function add$1(name, handler, capture, passive) {
     // async edge case #6566: inner click event triggers patch, event handler
     // attached to outer element during patch, and triggered again. This
     // happens because browsers fire microtask ticks between event propagation.
     // the solution is simple: we save the timestamp when a handler is attached,
     // and the handler would only fire if the event passed to it was fired
     // AFTER it was attached.
+
+    // 内置的点击事件触发补丁，打补丁时处理函数属于输出的html标签，并且再次触发
+    // 这是由于浏览器在事件传播的过程触发微任务
     if (useMicrotaskFix) {
       var attachedTimestamp = currentFlushTimestamp;
       var original = handler;
-      handler = original._wrapper = function (e) {
+
+      handler = original._wrapper = function(e) {
         if (
           // no bubbling, should always fire.
           // this is just a safety net in case event.timeStamp is unreliable in
           // certain weird environments...
+
+          // 不会冒泡，总是能被触发
+          // 这是一种安全措施，避免在某些奇怪的情况下，事件触发的时间戳不可靠
+
           e.target === e.currentTarget ||
           // event is fired after handler attachment
+          // 事件应该在方法挂载之后执行
           e.timeStamp >= attachedTimestamp ||
           // bail for environments that have buggy event.timeStamp implementations
           // #9462 iOS 9 bug: event.timeStamp is 0 after history.pushState
           // #9681 QtWebEngine event.timeStamp is negative value
+
+          // 确保在一些奇怪的情况下，时间时间戳能正常记录
           e.timeStamp <= 0 ||
           // #9448 bail if event is fired in another document in a multi-page
           // electron/nw.js app, since event.timeStamp will be using a different
           // starting reference
+
+          // 如果事件在多页面程序中的其他页面被处罚，确保他能正确执行
+          // 因为事件触发的时间需要一个不同的初始参考值
           e.target.ownerDocument !== document
         ) {
+          debugger
+          console.log(original.apply(this, arguments));
           return original.apply(this, arguments)
         }
       };
     }
-    target$1.addEventListener(
-      name,
-      handler,
-      supportsPassive
-        ? { capture: capture, passive: passive }
-        : capture
-    );
+    debugger
+    // 初始化
+    // 绑定 change 事件
+    target$1.addEventListener(name, handler, supportsPassive ? { capture: capture, passive: passive } : capture);
   }
 
-  function remove$2 (
-    name,
-    handler,
-    capture,
-    _target
-  ) {
-    (_target || target$1).removeEventListener(
-      name,
-      handler._wrapper || handler,
-      capture
-    );
+  function remove$2(name, handler, capture, _target) {
+  (_target || target$1).removeEventListener(name, handler._wrapper || handler, capture);
   }
 
-  function updateDOMListeners (oldVnode, vnode) {
+  function updateDOMListeners(oldVnode, vnode) {
     if (isUndef(oldVnode.data.on) && isUndef(vnode.data.on)) {
       return
     }

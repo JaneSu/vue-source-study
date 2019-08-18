@@ -12,11 +12,12 @@ new Vue({
   data: {
     branches: ['master', 'dev'],
     currentBranch: 'master',
-    commits: null
+    commits: null,
+    showNode: false
   },
 
   created: function() {
-    this.fetchData()
+    // this.fetchData()
   },
 
   watch: {

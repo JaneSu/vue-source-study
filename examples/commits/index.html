@@ -42,6 +42,8 @@
           at <span class="date">{{ record.commit.author.date | formatDate }}</span>
         </li>
       </ul>
+      <p v-if="showNode">new node</p>
+      <span @click="showNode = !showNode">show node</span>
     </div>
     <script src="mock.js"></script>
     <script src="app.js"></script>

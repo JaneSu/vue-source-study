@@ -17,12 +17,18 @@ const sharedPropertyDefinition = {
 }
 
 export function proxy(target: Object, sourceKey: string, key: string) {
+  // 根据 initData 函数中的循环设置data里没想的 defineProperty
   sharedPropertyDefinition.get = function proxyGetter() {
     return this[sourceKey][key]
   }
   sharedPropertyDefinition.set = function proxySetter(val) {
     this[sourceKey][key] = val
   }
+  // target 中的子元素不具备 key 这个属性
+  // 而是在 $data 或者 _data 中才有
+  // 这里用 defineProperty 设置对象上不存在的属性是可以做一层转发
+  // eg: this.name = 'Jane'
+  // 实际改变的是 this._data.name = 'Jane'
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
@@ -84,11 +90,20 @@ function initProps(vm: Component, propsOptions: Object) {
   toggleObserving(true)
 }
 
+/**
+ * @description 初始化 data 里的数据
+ * @param {Component} vm 当前页面的实例
+ */
 function initData(vm: Component) {
   let data = vm.$options.data
   // 检查返回的data对象是函数还是对象
+  // 这里 data 引用拷贝了 vm._data ,因此
+  // 后续对 data 的修改都会反映到 vm._data 上
+  // 这里分了两步， proxy 将 vm.[key] 代理到 vm._data.[key] 上
+  // 再在 vm._data.[keu] 用 definePropperty 设置值
   data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {}
   if (!isPlainObject(data)) {
+    // 处理data不为对象的错误情况
     data = {}
     process.env.NODE_ENV !== 'production' && warn('data functions should return an object:\n' + 'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function', vm)
   }
@@ -101,7 +116,7 @@ function initData(vm: Component) {
     const key = keys[i]
     if (process.env.NODE_ENV !== 'production') {
       if (methods && hasOwn(methods, key)) {
-        // method 和 data中
+        // method 和 data 中
         // 如果有相同的key
         // 报错
         warn(`Method "${key}" has already been defined as a data property.`, vm)
@@ -121,8 +136,11 @@ function initData(vm: Component) {
 
 export function getData(data: Function, vm: Component): any {
   // #7573 disable dep collection when invoking data getters
+  // 数据调用getter时，禁止依赖收集
   pushTarget()
   try {
+    // 将data中的this绑定到实例上
+
     return data.call(vm, vm)
   } catch (e) {
     handleError(e, vm, `data()`)

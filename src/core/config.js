@@ -1,39 +1,35 @@
 /* @flow */
 
-import {
-  no,
-  noop,
-  identity
-} from 'shared/util'
+import { no, noop, identity } from 'shared/util'
 
 import { LIFECYCLE_HOOKS } from 'shared/constants'
 
 export type Config = {
   // user
-  optionMergeStrategies: { [key: string]: Function };
-  silent: boolean;
-  productionTip: boolean;
-  performance: boolean;
-  devtools: boolean;
-  errorHandler: ?(err: Error, vm: Component, info: string) => void;
-  warnHandler: ?(msg: string, vm: Component, trace: string) => void;
-  ignoredElements: Array<string | RegExp>;
-  keyCodes: { [key: string]: number | Array<number> };
+  optionMergeStrategies: { [key: string]: Function },
+  silent: boolean,
+  productionTip: boolean,
+  performance: boolean,
+  devtools: boolean,
+  errorHandler: ?(err: Error, vm: Component, info: string) => void,
+  warnHandler: ?(msg: string, vm: Component, trace: string) => void,
+  ignoredElements: Array<string | RegExp>,
+  keyCodes: { [key: string]: number | Array<number> },
 
   // platform
-  isReservedTag: (x?: string) => boolean;
-  isReservedAttr: (x?: string) => boolean;
-  parsePlatformTagName: (x: string) => string;
-  isUnknownElement: (x?: string) => boolean;
-  getTagNamespace: (x?: string) => string | void;
-  mustUseProp: (tag: string, type: ?string, name: string) => boolean;
+  isReservedTag: (x?: string) => boolean,
+  isReservedAttr: (x?: string) => boolean,
+  parsePlatformTagName: (x: string) => string,
+  isUnknownElement: (x?: string) => boolean,
+  getTagNamespace: (x?: string) => string | void,
+  mustUseProp: (tag: string, type: ?string, name: string) => boolean,
 
   // private
-  async: boolean;
+  async: boolean,
 
   // legacy
-  _lifecycleHooks: Array<string>;
-};
+  _lifecycleHooks: Array<string>
+}
 
 export default ({
   /**
@@ -120,6 +116,9 @@ export default ({
   /**
    * Perform updates asynchronously. Intended to be used by Vue Test Utils
    * This will significantly reduce performance if set to false.
+   *
+   * 异步更新数据，用于 Vue Test Utils
+   * 如果设置为false，会显著降低性能
    */
   async: true,
 

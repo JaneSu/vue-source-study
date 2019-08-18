@@ -10,6 +10,8 @@ const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
 /**
  * In some cases we may want to disable observation inside a component's
  * update computation.
+ *
+ * 在某些情况下，我们希望在组件内更新计算时禁用观察者
  */
 export let shouldObserve: boolean = true
 
@@ -29,10 +31,10 @@ export class Observer {
   vmCount: number // number of vms that have this object as root $data
 
   constructor(value: any) {
-    debugger
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    // 将 Observer 的实例绑定在 data 的__ob__中
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
       if (hasProto) {
@@ -59,6 +61,7 @@ export class Observer {
    * 只有在值的类型为对象时调用此方法
    */
   walk(obj: Object) {
+    debugger
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
       defineReactive(obj, keys[i])
@@ -124,6 +127,12 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
     // 存在相应的观测
     ob = value.__ob__
   } else if (shouldObserve && !isServerRendering() && (Array.isArray(value) || isPlainObject(value)) && Object.isExtensible(value) && !value._isVue) {
+    // 条件判断
+    // 可以建立观察 且
+    // 不是服务端渲染 且
+    // 是数组或者对象 且
+    // 对象是否可扩展（能否在这个对象上添加属性） 且
+    // 不是vue实例
     ob = new Observer(value)
   }
   if (asRootData && ob) {
@@ -138,6 +147,9 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
 export function defineReactive(obj: Object, key: string, val: any, customSetter?: ?Function, shallow?: boolean) {
   const dep = new Dep()
 
+  获取对象的属性设置
+  如果设置存在并别属性设置为不可修改
+  // 则返回 不做操作
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
     return
@@ -146,6 +158,10 @@ export function defineReactive(obj: Object, key: string, val: any, customSetter?
   // cater for pre-defined getter/setters
   const getter = property && property.get
   const setter = property && property.set
+
+  // 如果没有设置过getter或者存在setter 且
+  // 只传入了两个参数，则将
+  // 旧对象上属性的值赋值给一个变量
   if ((!getter || setter) && arguments.length === 2) {
     val = obj[key]
   }
@@ -168,6 +184,7 @@ export function defineReactive(obj: Object, key: string, val: any, customSetter?
       return value
     },
     set: function reactiveSetter(newVal) {
+      // 获取旧属性值
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */
       if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -178,6 +195,7 @@ export function defineReactive(obj: Object, key: string, val: any, customSetter?
         customSetter()
       }
       // #7981: for accessor properties without setter
+      // 用于没有setter的访问器属性
       if (getter && !setter) return
       if (setter) {
         setter.call(obj, newVal)
