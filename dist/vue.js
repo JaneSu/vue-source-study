@@ -769,6 +769,7 @@
   var targetStack = [];
 
   function pushTarget(target) {
+    // debugger
     targetStack.push(target);
     Dep.target = target;
   }
@@ -968,7 +969,7 @@
    * 只有在值的类型为对象时调用此方法
    */
   Observer.prototype.walk = function walk (obj) {
-    debugger
+    // debugger
     var keys = Object.keys(obj);
     for (var i = 0; i < keys.length; i++) {
       defineReactive(obj, keys[i]);
@@ -1052,6 +1053,9 @@
    */
   function defineReactive(obj, key, val, customSetter, shallow) {
     var dep = new Dep();
+
+    // 获取对象的属性设置
+    // 如果设置存在并别属性设置为不可修改
     // 则返回 不做操作
     var property = Object.getOwnPropertyDescriptor(obj, key);
     if (property && property.configurable === false) {
@@ -1087,6 +1091,7 @@
         return value
       },
       set: function reactiveSetter(newVal) {
+        debugger
         // 获取旧属性值
         var value = getter ? getter.call(obj) : val;
         /* eslint-disable no-self-compare */
@@ -2072,40 +2077,23 @@
 
   {
     var allowedGlobals = makeMap(
-      'Infinity,undefined,NaN,isFinite,isNaN,' +
-      'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' +
-      'Math,Number,Date,Array,Object,Boolean,String,RegExp,Map,Set,JSON,Intl,' +
-      'require' // for Webpack/Browserify
+      'Infinity,undefined,NaN,isFinite,isNaN,' + 'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' + 'Math,Number,Date,Array,Object,Boolean,String,RegExp,Map,Set,JSON,Intl,' + 'require' // for Webpack/Browserify
     );
 
     var warnNonPresent = function (target, key) {
-      warn(
-        "Property or method \"" + key + "\" is not defined on the instance but " +
-        'referenced during render. Make sure that this property is reactive, ' +
-        'either in the data option, or for class-based components, by ' +
-        'initializing the property. ' +
-        'See: https://vuejs.org/v2/guide/reactivity.html#Declaring-Reactive-Properties.',
-        target
-      );
+      warn("Property or method \"" + key + "\" is not defined on the instance but " + 'referenced during render. Make sure that this property is reactive, ' + 'either in the data option, or for class-based components, by ' + 'initializing the property. ' + 'See: https://vuejs.org/v2/guide/reactivity.html#Declaring-Reactive-Properties.', target);
     };
 
     var warnReservedPrefix = function (target, key) {
-      warn(
-        "Property \"" + key + "\" must be accessed with \"$data." + key + "\" because " +
-        'properties starting with "$" or "_" are not proxied in the Vue instance to ' +
-        'prevent conflicts with Vue internals. ' +
-        'See: https://vuejs.org/v2/api/#data',
-        target
-      );
+      warn("Property \"" + key + "\" must be accessed with \"$data." + key + "\" because " + 'properties starting with "$" or "_" are not proxied in the Vue instance to ' + 'prevent conflicts with Vue internals. ' + 'See: https://vuejs.org/v2/api/#data', target);
     };
 
-    var hasProxy =
-      typeof Proxy !== 'undefined' && isNative(Proxy);
+    var hasProxy = typeof Proxy !== 'undefined' && isNative(Proxy);
 
     if (hasProxy) {
       var isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta,exact');
       config.keyCodes = new Proxy(config.keyCodes, {
-        set: function set (target, key, value) {
+        set: function set(target, key, value) {
           if (isBuiltInModifier(key)) {
             warn(("Avoid overwriting built-in modifier in config.keyCodes: ." + key));
             return false
@@ -2118,10 +2106,10 @@
     }
 
     var hasHandler = {
-      has: function has (target, key) {
+      has: function has(target, key) {
+        // debugger
         var has = key in target;
-        var isAllowed = allowedGlobals(key) ||
-          (typeof key === 'string' && key.charAt(0) === '_' && !(key in target.$data));
+        var isAllowed = allowedGlobals(key) || (typeof key === 'string' && key.charAt(0) === '_' && !(key in target.$data));
         if (!has && !isAllowed) {
           if (key in target.$data) { warnReservedPrefix(target, key); }
           else { warnNonPresent(target, key); }
@@ -2131,7 +2119,7 @@
     };
 
     var getHandler = {
-      get: function get (target, key) {
+      get: function get(target, key) {
         if (typeof key === 'string' && !(key in target)) {
           if (key in target.$data) { warnReservedPrefix(target, key); }
           else { warnNonPresent(target, key); }
@@ -2140,13 +2128,13 @@
       }
     };
 
-    initProxy = function initProxy (vm) {
+    initProxy = function initProxy(vm) {
       if (hasProxy) {
         // determine which proxy handler to use
         var options = vm.$options;
-        var handlers = options.render && options.render._withStripped
-          ? getHandler
-          : hasHandler;
+
+        var handlers = options.render && options.render._withStripped ? getHandler : hasHandler;
+
         vm._renderProxy = new Proxy(vm, handlers);
       } else {
         vm._renderProxy = vm;
@@ -4435,13 +4423,8 @@
    * and fires callback when the expression value changes.
    * This is used for both the $watch() api and directives.
    */
-  var Watcher = function Watcher (
-    vm,
-    expOrFn,
-    cb,
-    options,
-    isRenderWatcher
-  ) {
+  var Watcher = function Watcher(vm, expOrFn, cb, options, isRenderWatcher) {
+    debugger
     this.vm = vm;
     if (isRenderWatcher) {
       vm._watcher = this;
@@ -4465,8 +4448,7 @@
     this.newDeps = [];
     this.depIds = new _Set();
     this.newDepIds = new _Set();
-    this.expression =  expOrFn.toString()
-      ;
+    this.expression =  expOrFn.toString() ;
     // parse expression for getter
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn;
@@ -4474,17 +4456,10 @@
       this.getter = parsePath(expOrFn);
       if (!this.getter) {
         this.getter = noop;
-         warn(
-          "Failed watching path: \"" + expOrFn + "\" " +
-          'Watcher only accepts simple dot-delimited paths. ' +
-          'For full control, use a function instead.',
-          vm
-        );
+         warn("Failed watching path: \"" + expOrFn + "\" " + 'Watcher only accepts simple dot-delimited paths. ' + 'For full control, use a function instead.', vm);
       }
     }
-    this.value = this.lazy
-      ? undefined
-      : this.get();
+    this.value = this.lazy ? undefined : this.get();
   };
 
   /**
@@ -4944,6 +4919,7 @@
 
   function initMixin(Vue) {
     Vue.prototype._init = function(options) {
+      // vm指向当前的页面对象
       var vm = this;
       // a uid
       vm._uid = uid$2++;
@@ -4955,7 +4931,7 @@
         endTag = "vue-perf-end:" + (vm._uid);
         mark(startTag);
       }
-
+      // debugger
       // a flag to avoid this being observed
       // 一个标记，防止被观察
       vm._isVue = true;
@@ -4970,11 +4946,15 @@
         vm.$options = mergeOptions(resolveConstructorOptions(vm.constructor), options || {}, vm);
       }
       /* istanbul ignore else */
+      // 判断当前环境是否原生支持proxy
       {
+        // debugger
         initProxy(vm);
       }
       // expose real self
       vm._self = vm;
+      // 生命周期
+      // debugger
       initLifecycle(vm);
       initEvents(vm);
       initRender(vm);
@@ -5057,6 +5037,7 @@
     if ( !(this instanceof Vue)) {
       warn('Vue is a constructor and should be called with the `new` keyword');
     }
+
     this._init(options);
   }
 
@@ -5641,13 +5622,11 @@
   /**
    * Query an element selector if it's not an element already.
    */
-  function query (el) {
+  function query(el) {
     if (typeof el === 'string') {
       var selected = document.querySelector(el);
       if (!selected) {
-         warn(
-          'Cannot find element: ' + el
-        );
+         warn('Cannot find element: ' + el);
         return document.createElement('div')
       }
       return selected
@@ -7481,7 +7460,7 @@
           // 因为事件触发的时间需要一个不同的初始参考值
           e.target.ownerDocument !== document
         ) {
-          debugger
+          // debugger
           console.log(original.apply(this, arguments));
           return original.apply(this, arguments)
         }
@@ -11809,17 +11788,12 @@
   });
 
   var mount = Vue.prototype.$mount;
-  Vue.prototype.$mount = function (
-    el,
-    hydrating
-  ) {
+  Vue.prototype.$mount = function(el, hydrating) {
     el = el && query(el);
-
+    // debugger
     /* istanbul ignore if */
     if (el === document.body || el === document.documentElement) {
-       warn(
-        "Do not mount Vue to <html> or <body> - mount to normal elements instead."
-      );
+       warn("Do not mount Vue to <html> or <body> - mount to normal elements instead.");
       return this
     }
 
@@ -11833,10 +11807,7 @@
             template = idToTemplate(template);
             /* istanbul ignore if */
             if ( !template) {
-              warn(
-                ("Template element not found or is empty: " + (options.template)),
-                this
-              );
+              warn(("Template element not found or is empty: " + (options.template)), this);
             }
           }
         } else if (template.nodeType) {
@@ -11856,13 +11827,17 @@
           mark('compile');
         }
 
-        var ref = compileToFunctions(template, {
-          outputSourceRange: "development" !== 'production',
-          shouldDecodeNewlines: shouldDecodeNewlines,
-          shouldDecodeNewlinesForHref: shouldDecodeNewlinesForHref,
-          delimiters: options.delimiters,
-          comments: options.comments
-        }, this);
+        var ref = compileToFunctions(
+          template,
+          {
+            outputSourceRange: "development" !== 'production',
+            shouldDecodeNewlines: shouldDecodeNewlines,
+            shouldDecodeNewlinesForHref: shouldDecodeNewlinesForHref,
+            delimiters: options.delimiters,
+            comments: options.comments
+          },
+          this
+        );
         var render = ref.render;
         var staticRenderFns = ref.staticRenderFns;
         options.render = render;
@@ -11882,7 +11857,7 @@
    * Get outerHTML of elements, taking care
    * of SVG elements in IE as well.
    */
-  function getOuterHTML (el) {
+  function getOuterHTML(el) {
     if (el.outerHTML) {
       return el.outerHTML
     } else {

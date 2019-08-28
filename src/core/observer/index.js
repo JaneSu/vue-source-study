@@ -61,7 +61,7 @@ export class Observer {
    * 只有在值的类型为对象时调用此方法
    */
   walk(obj: Object) {
-    debugger
+    // debugger
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
       defineReactive(obj, keys[i])
@@ -147,8 +147,8 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
 export function defineReactive(obj: Object, key: string, val: any, customSetter?: ?Function, shallow?: boolean) {
   const dep = new Dep()
 
-  获取对象的属性设置
-  如果设置存在并别属性设置为不可修改
+  // 获取对象的属性设置
+  // 如果设置存在并别属性设置为不可修改
   // 则返回 不做操作
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
@@ -184,6 +184,7 @@ export function defineReactive(obj: Object, key: string, val: any, customSetter?
       return value
     },
     set: function reactiveSetter(newVal) {
+      debugger
       // 获取旧属性值
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */

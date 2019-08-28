@@ -89,7 +89,7 @@ function add(name: string, handler: Function, capture: boolean, passive: boolean
         // 因为事件触发的时间需要一个不同的初始参考值
         e.target.ownerDocument !== document
       ) {
-        debugger
+        // debugger
         console.log(original.apply(this, arguments))
         return original.apply(this, arguments)
       }

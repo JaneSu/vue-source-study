@@ -14,6 +14,7 @@ let uid = 0
 
 export function initMixin(Vue: Class<Component>) {
   Vue.prototype._init = function(options?: Object) {
+    // vm指向当前的页面对象
     const vm: Component = this
     // a uid
     vm._uid = uid++
@@ -25,7 +26,7 @@ export function initMixin(Vue: Class<Component>) {
       endTag = `vue-perf-end:${vm._uid}`
       mark(startTag)
     }
-
+    // debugger
     // a flag to avoid this being observed
     // 一个标记，防止被观察
     vm._isVue = true
@@ -40,13 +41,17 @@ export function initMixin(Vue: Class<Component>) {
       vm.$options = mergeOptions(resolveConstructorOptions(vm.constructor), options || {}, vm)
     }
     /* istanbul ignore else */
+    // 判断当前环境是否原生支持proxy
     if (process.env.NODE_ENV !== 'production') {
+      // debugger
       initProxy(vm)
     } else {
       vm._renderProxy = vm
     }
     // expose real self
     vm._self = vm
+    // 生命周期
+    // debugger
     initLifecycle(vm)
     initEvents(vm)
     initRender(vm)

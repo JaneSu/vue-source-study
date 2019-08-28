@@ -208,6 +208,8 @@ const builds = {
   }
 }
 
+// 将上面针对不同环境的配置
+// 转换成rollup需要的配置形式
 function genConfig(name) {
   const opts = builds[name]
   const config = {

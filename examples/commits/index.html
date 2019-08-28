@@ -25,7 +25,7 @@
   <body>
     <div id="demo">
       <h1>Latest Vue.js Commits</h1>
-      <template v-for="branch in branches">
+      <!-- <template v-for="branch in branches">
         <input type="radio" :id="branch" :value="branch" name="branch" v-model="currentBranch" />
         <label :for="branch">{{ branch }}</label>
       </template>
@@ -41,9 +41,9 @@
           >
           at <span class="date">{{ record.commit.author.date | formatDate }}</span>
         </li>
-      </ul>
+      </ul> -->
       <p v-if="showNode">new node</p>
-      <span @click="showNode = !showNode">show node</span>
+      <div @click="showNodeMethod">show node</div>
     </div>
     <script src="mock.js"></script>
     <script src="app.js"></script>
